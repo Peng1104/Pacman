@@ -4,7 +4,7 @@ IMG_DIR = path.join(path.dirname(__file__), 'assets', 'img')
 SND_DIR = path.join(path.dirname(__file__), 'assets', 'snd')
 FNT_DIR = path.join(path.dirname(__file__), 'assets', 'font')
 
-BLUE = (0, 0, 255)
+BLUE = (0, 0, 150)
 GREY = (100, 100, 100)
 
 
