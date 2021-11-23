@@ -17,49 +17,70 @@ GHOST_WIDTH = TILESIZE
 GHOST_HEIGHT = TILESIZE
 PACMAN_WIDTH = TILESIZE
 PACMAN_HEIGHT = TILESIZE
-
+COIN_WIDTH = 20
+COIN_HEIGHT = 20
 ghost_img = pygame.image.load(path.join(IMG_DIR, 'ghost.png')).convert_alpha()
 ghost_img = pygame.transform.scale(ghost_img, (GHOST_WIDTH, GHOST_HEIGHT))
 pacman_img = pygame.image.load(path.join(IMG_DIR, 'pacman.png')).convert_alpha()
 pacman_img = pygame.transform.scale(pacman_img, (PACMAN_WIDTH, PACMAN_HEIGHT))
+coin_img = pygame.image.load(path.join(IMG_DIR, 'coin.png')).convert_alpha()
+coin_img = pygame.transform.scale(coin_img, (COIN_WIDTH, COIN_HEIGHT))
 
     
 class Pacman(pygame.sprite.Sprite):
     def __init__(self, img, x, y):
         pygame.sprite.Sprite.__init__(self)
 
+        self.original_image = img
         self.image = img
         self.rect = self.image.get_rect()
         self.x = x
         self.y = y
+        
+        self.dx = 1
+        self.dy = 0
 
     def move(self, dx=0, dy=0):
-        if not self.collide_with_walls(dx, dy):
-            self.x += dx
-            self.y += dy
+        if self.is_free_space(dx, dy) and self.is_in_bounds((dx, dy)):
+            self.dx = dx
+            self.dy = dy
 
-        if self.rect.right > WIDTH:
-            self.rect.right = WIDTH
+            self.x += self.dx
+            self.y += self.dy
 
-        if self.rect.left < 0:
-            self.rect.left = 0 
-
-        if self.rect.top < 0:
-            self.rect.top = 0
-
-        if self.rect.bottom > HEIGHT:
-            self.rect.bottom = HEIGHT
-
-    def collide_with_walls(self, dx=0, dy=0):
+    def is_free_space(self, dx=0, dy=0):
         for wall in all_walls:
             if wall.x == self.x + dx and wall.y == self.y + dy:
-                return True
+                return False
         
-        return False
+        return True
+
+    def is_in_bounds(self, offset):
+        dx, dy = offset
+
+        final_x = self.x + dx
+        final_y = self.y + dy
+
+        return final_x > 0 and final_x < WIDTH and final_y > 0 and final_y < HEIGHT
 
     def update(self):
+        self.adjust_image()
+
         self.rect.x = self.x * TILESIZE
         self.rect.y = self.y * TILESIZE
+
+    def adjust_image(self):        
+        current_direction = (self.dx, self.dy)
+
+        if (current_direction == (0, -1)):
+            self.image = pygame.transform.rotate(self.original_image, 90)
+        elif (current_direction == (1, 0)):
+            self.image = self.original_image
+        elif (current_direction == (0, 1)):
+            self.image = pygame.transform.rotate(self.original_image, -90)
+        else:
+            self.image = pygame.transform.flip(self.original_image, True, False)
+
 
 class Ghost(pygame.sprite.Sprite):
     def __init__(self, img, x, y):
@@ -69,36 +90,96 @@ class Ghost(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         # self.rect.x = random.randint(0, WIDTH-GHOST_WIDTH)
         # self.rect.y = random.randint(-100, -GHOST_HEIGHT)
-        self.rect.x = 0
-        self.rect.y = 0
-        self.dx = random.randint(-3, 3)
-        self.dy = random.randint(2, 9)
+        # self.rect.x = 0
+        # self.rect.y = 0
+        self.dx = -1
+        self.dy = 0
         self.x = x
         self.y = y
 
-    def move(self):
+        self.last_move = pygame.time.get_ticks()
+        self.move_ticks = 300
 
-        if not self.collide_with_walls():
+    def move(self):
+        if (not self.is_time_to_move()):
+            return
+        
+        self.last_move = pygame.time.get_ticks()
+        
+        if (self.can_keep_moving()):
             self.x += self.dx
             self.y += self.dy
+        else:
+            self.move_randomly()
+        
+    def move_randomly(self):
+        possible_moves = [
+            (0, -1),
+            (1, 0),
+            (0, 1),
+            (-1, 0)
+        ]
 
-        if self.rect.top > HEIGHT or self.rect.right < 0 or self.rect.left > WIDTH:
-            self.rect.x = random.randint(0, WIDTH-GHOST_WIDTH)
-            self.rect.y = random.randint(-100, -GHOST_HEIGHT)
-            self.speedx = random.randint(-3, 3)
-            self.speedy = random.randint(2, 9)
+        available_moves = list(filter(self.can_move, possible_moves))
+        
+        opposite_direction = (self.dx * -1, self.dy * -1)
+        if (len(available_moves) > 1 and opposite_direction in available_moves):
+            available_moves.remove(opposite_direction)
+
+        if (len(available_moves) > 0):
+            dx, dy = random.choice(available_moves)
+
+            self.dx = dx
+            self.dy = dy
+
+            self.x = self.x + self.dx
+            self.y = self.y + self.dy
+
+    def is_time_to_move(self):
+        now = pygame.time.get_ticks()
+        elapsed_ticks = now - self.last_move
+
+        return elapsed_ticks >= self.move_ticks
 
     def update(self):
+        self.move()
         self.rect.x = self.x * TILESIZE
         self.rect.y = self.y * TILESIZE
-    
-    def collide_with_walls(self):
-        for wall in all_walls:
-            if wall.x == self.x + self.dx and wall.y == self.y + self.dy:
-                return True
         
-        return False
+    def can_keep_moving(self):
+        chance = random.random()
 
+        return self.can_move((self.dx, self.dy)) and chance > 0.75
+
+    def can_move(self, offset):
+        return self.is_free_space(offset) and self.is_in_bounds(offset)
+    
+    def is_free_space(self, offset):
+        dx, dy = offset
+        
+        for wall in all_walls:
+            if wall.x == self.x + dx and wall.y == self.y + dy:
+                return False
+        
+        return True
+    
+    def is_in_bounds(self, offset):
+        dx, dy = offset
+
+        final_x = self.x + dx
+        final_y = self.y + dy
+
+        return final_x > 0 and final_x < WIDTH and final_y > 0 and final_y < HEIGHT
+
+class Coin(pygame.sprite.Sprite):
+    def __init__(self,img, x, y):
+        pygame.sprite.Sprite.__init__(self)
+
+        self.image = img
+        self.rect = self.image.get_rect()
+        self.rect.x = x * TILESIZE + ((TILESIZE - COIN_WIDTH) // 2)
+        self.rect.y = y * TILESIZE + ((TILESIZE - COIN_HEIGHT) // 2) 
+    
 class Wall(pygame.sprite.Sprite):
     def __init__(self, all_sprites, all_walls, x, y):
         self.groups = all_sprites, all_walls
@@ -110,6 +191,7 @@ class Wall(pygame.sprite.Sprite):
         self.y = y
         self.rect.x = x * TILESIZE
         self.rect.y = y * TILESIZE      
+
 game = True
 
 game_folder = path.dirname(__file__)
@@ -121,9 +203,11 @@ with open(path.join(game_folder, 'map.txt'), 'rt') as f:
 clock = pygame.time.Clock()
 FPS = 30
 
-all_sprites = pygame.sprite.Group()
+all_sprites = pygame.sprite.Group() 
+all_players = pygame.sprite.Group()
 all_ghosts = pygame.sprite.Group()
 all_walls = pygame.sprite.Group()
+all_coins = pygame.sprite.Group()
 
 player = None
 
@@ -133,13 +217,19 @@ for row, tiles in enumerate(map_data):
             wall = Wall(all_sprites, all_walls, col, row)
             all_sprites.add(wall)
             all_walls.add(wall)
-        if tile == '@':
+        elif tile == '@':
             player = Pacman(pacman_img, col, row)
             all_sprites.add(player)
-        if tile =='$':
+            all_players.add(player)
+        elif tile =='$':
             ghost = Ghost(ghost_img, col, row)
             all_sprites.add(ghost)
             all_ghosts.add(ghost)
+        elif tile == '.':
+            coin = Coin(coin_img, col, row)
+            all_sprites.add(coin)
+            all_coins.add(coin)
+
 if player == None:
     raise 'Mapa ruim'
 
@@ -162,8 +252,6 @@ while game:
             if event.key == pygame.K_DOWN:
                 player.move(dy = 1)
 
-    # for ghost in all_ghosts:
-    #     ghost.move()
     all_sprites.update()
 
     hits = pygame.sprite.spritecollide(player, all_ghosts, True)
@@ -171,9 +259,18 @@ while game:
     if len(hits) > 0:
         game = False
 
+    hits = pygame.sprite.spritecollide(player, all_coins, True)
+    if len(all_coins) == 0:
+        game = False
     window.fill((0, 0, 0))
 
-    all_sprites.draw(window)
+    # all_sprites.draw(window)
+
+    all_coins.draw(window)
+    all_players.draw(window)
+    all_ghosts.draw(window)
+    all_walls.draw(window)
+    
     
     for x in range(0, WIDTH, TILESIZE):
         pygame.draw.line(window,GREY, (x, 0), (x, HEIGHT))
