@@ -1,14 +1,15 @@
 import pygame
+from assets import PACMAN_IMG
 
 from settings import WIDTH, HEIGHT, TILESIZE
 
 class Pacman(pygame.sprite.Sprite):
-    def __init__(self, img, x, y, all_walls = []):
+    def __init__(self, assets, x, y, all_walls = []):
         pygame.sprite.Sprite.__init__(self)
 
         self.all_walls = all_walls
-        self.original_image = img
-        self.image = img
+        self.original_image = assets[PACMAN_IMG]
+        self.image = assets[PACMAN_IMG]
         self.rect = self.image.get_rect()
         self.x = x
         self.y = y

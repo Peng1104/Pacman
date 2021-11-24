@@ -1,16 +1,17 @@
 import pygame
 import random
 
+from assets import GHOST_IMG
 from settings import HEIGHT, TILESIZE, WIDTH
 
 
 class Ghost(pygame.sprite.Sprite):
-    def __init__(self, img, x, y, all_walls = []):
+    def __init__(self, assets, x, y, all_walls = []):
         pygame.sprite.Sprite.__init__(self)
 
         self.all_walls = all_walls
 
-        self.image = img
+        self.image = assets[GHOST_IMG]
         self.rect = self.image.get_rect()
         self.dx = -1
         self.dy = 0
