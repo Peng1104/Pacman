@@ -6,6 +6,15 @@ from init_screen import init_screen
 
 from settings import *
 
+def get_level_path(name):
+    level_map = {
+        'Level 1': 'maps/map.txt',
+        'Level 2': 'maps/map2.txt',
+        'Level 3': 'maps/map3.txt'
+    }
+
+    return level_map[name]
+
 def load_map(map_path):
     game_folder = path.dirname(__file__)
     
@@ -22,12 +31,14 @@ window = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption('Pac-man!')
 
 state = INIT
+selected_level = None
 while state != QUIT:
     if state == INIT:
-        # state = init_screen(window)
-        state = GAME
-    elif state == GAME:
-        map_data = load_map('maps/map3.txt')
+        selected_level = init_screen(window)
+        state = PLAYING
+    elif state == PLAYING:
+        map_path = get_level_path(selected_level)
+        map_data = load_map(map_path)
         state = game_screen(window, map_data)
     else:
         state = QUIT
