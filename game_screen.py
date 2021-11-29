@@ -1,6 +1,8 @@
 import pygame
+import time
 
-from assets import load_assets
+# from assets import MOVE_SND, load_assets
+from assets import *
 from settings import FPS, GREY, HEIGHT, TILESIZE, WIDTH
 from sprites.coin import Coin
 from sprites.ghost import Ghost
@@ -11,7 +13,7 @@ def game_screen(window, map_data):
     assets = load_assets()
     sprites = build_map(assets, map_data)
 
-    run(window, sprites)
+    run(window, sprites, assets)
 
 def build_map(assets, map_data):
     sprites = {
@@ -45,7 +47,7 @@ def build_map(assets, map_data):
                 sprites['all_coins'].add(coin)
 
     if player == None:
-        raise 'Mapa ruim'
+        raise 'Mapa falho'
 
     return sprites
 
@@ -55,7 +57,7 @@ def draw_grid(window, color):
     for y in range(0, HEIGHT, TILESIZE):
         pygame.draw.line(window, color, (0, y), (WIDTH, y))
 
-def run(window, sprites):
+def run(window, sprites, assets):
     clock = pygame.time.Clock()
     pygame.key.set_repeat(300, 250)
 
@@ -64,7 +66,7 @@ def run(window, sprites):
     DONE = 0
     PLAYING = 1
     state = PLAYING
-
+    assets[MUSIC_SND].play()
     while state != DONE:
         clock.tick(FPS)
 
@@ -73,6 +75,7 @@ def run(window, sprites):
                 state = DONE
             if state == PLAYING:
                 if event.type == pygame.KEYDOWN:
+                    # assets[MOVE_SND].play()
                     if event.key == pygame.K_LEFT:
                         player.move(dx = -1) 
                     if event.key == pygame.K_RIGHT:
@@ -88,6 +91,8 @@ def run(window, sprites):
             ghost_hits = pygame.sprite.spritecollide(player, sprites['all_ghosts'], True)
 
             if len(ghost_hits) > 0:
+                assets[DEATH_SND].play()
+                time.sleep(1.5)
                 state = DONE
 
             pygame.sprite.spritecollide(player, sprites['all_coins'], True)
