@@ -3,7 +3,7 @@ import time
 
 # from assets import MOVE_SND, load_assets
 from assets import *
-from settings import FPS, GAMEOVER, GREY, HEIGHT, QUIT, TILESIZE, WIDTH
+from settings import FPS, GAMEOVER, GREY, HEIGHT, QUIT, TILESIZE, WIDTH, WIN
 from sprites.coin import Coin
 from sprites.ghost import Ghost
 from sprites.pacman import Pacman
@@ -116,7 +116,7 @@ def run(window, sprites, assets):
             if len(sprites['all_coins']) == 0:
                 state = DONE
 
-                return GAMEOVER
+                return WIN
 
         if state == COLLIDING:
             now = pygame.time.get_ticks()
@@ -126,14 +126,13 @@ def run(window, sprites, assets):
 
                 if lives == 0:
                     angle = 0
-                    sprites['all_players'].draw(window)
                     
-                    # for i in range(0, 72):
-                    #     angle += 10
-                    #     pacman_rotated, pacman_rotated_rect = player.rotate(angle)
-                    #     window.blit(pacman_rotated, pacman_rotated_rect)
-                    #     pygame.display.flip()
-                    #     clock.tick(30)
+                    for i in range(0, 72):
+                        angle += 10
+                        pacman_rotated, pacman_rotated_rect = player.rotate(angle)
+                        window.blit(pacman_rotated, pacman_rotated_rect)
+                        pygame.display.flip()
+                        clock.tick(30)
 
                     state = DONE
                     return GAMEOVER

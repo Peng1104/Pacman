@@ -61,6 +61,6 @@ class Pacman(pygame.sprite.Sprite):
             self.image = pygame.transform.flip(self.original_image, True, False)
 
     def rotate(self, angle):
-            rotated_surface = pygame.transform.rotozoom(self.image, -angle, 1)
+            rotated_surface = pygame.transform.rotate(self.image, -angle)
             rotated_rect = rotated_surface.get_rect(center = self.rect.center)
             return rotated_surface, rotated_rect

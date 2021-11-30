@@ -4,6 +4,7 @@ from os import path
 from game_screen import game_screen
 from init_screen import init_screen
 from final_screen import final_screen
+from win_screen import win_screen
 
 from settings import *
 
@@ -44,5 +45,7 @@ while state != QUIT:
         state = game_screen(window, map_data)
     elif state == GAMEOVER:
         state = final_screen(window)
+    elif state == WIN:
+        state = win_screen(window)
 
 pygame.quit() 
