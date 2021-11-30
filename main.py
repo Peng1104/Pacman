@@ -3,9 +3,11 @@ import pygame
 from os import path
 from game_screen import game_screen
 from init_screen import init_screen
+from final_screen import final_screen
 
 from settings import *
 
+# Função que identifica qual mapa foi escolhido
 def get_level_path(name):
     level_map = {
         'Level 1': 'maps/map.txt',
@@ -40,7 +42,7 @@ while state != QUIT:
         map_path = get_level_path(selected_level)
         map_data = load_map(map_path)
         state = game_screen(window, map_data)
-    else:
-        state = QUIT
+    elif state == GAMEOVER:
+        state = final_screen(window)
 
 pygame.quit() 

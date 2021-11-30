@@ -3,6 +3,7 @@ from assets import PACMAN_IMG
 
 from settings import WIDTH, HEIGHT, TILESIZE
 
+# Criando a classe 
 class Pacman(pygame.sprite.Sprite):
     def __init__(self, assets, x, y, all_walls = []):
         pygame.sprite.Sprite.__init__(self)
@@ -13,6 +14,7 @@ class Pacman(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.x = x
         self.y = y
+        self.center = self.rect.center
         
         self.dx = 1
         self.dy = 0
@@ -57,3 +59,8 @@ class Pacman(pygame.sprite.Sprite):
             self.image = pygame.transform.rotate(self.original_image, -90)
         else:
             self.image = pygame.transform.flip(self.original_image, True, False)
+
+    def rotate(self, angle):
+            rotated_surface = pygame.transform.rotozoom(self.image, -angle, 1)
+            rotated_rect = rotated_surface.get_rect(center = self.rect.center)
+            return rotated_surface, rotated_rect

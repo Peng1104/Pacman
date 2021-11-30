@@ -4,7 +4,7 @@ import random
 from assets import GHOST_IMG
 from settings import HEIGHT, TILESIZE, WIDTH
 
-
+# Criando a classe dos fantasmas
 class Ghost(pygame.sprite.Sprite):
     def __init__(self, assets, x, y, all_walls = []):
         pygame.sprite.Sprite.__init__(self)

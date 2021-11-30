@@ -1,10 +1,9 @@
 import pygame
-import random
 from os import path
 
 from settings import *
 
-# Define color
+# Definindo as cores
 COLOR_INACTIVE = (100, 80, 255)
 COLOR_ACTIVE = (100, 200, 255)
 COLOR_LIST_INACTIVE = (255, 100, 100)
@@ -12,7 +11,7 @@ COLOR_LIST_ACTIVE = (255, 150, 150)
 
 class DropDown():
     # Test List
-    option_list = ["Calibration", "Test"]
+    option_list = ["Level 1", "Level 2", "Level 3"]
 
     def __init__(self, color_menu, color_option, x, y, w, h, screen):
         self.color_menu = color_menu
@@ -25,7 +24,7 @@ class DropDown():
         self.draw = False
         self.opt_list = []
 
-    # Draw the initial button 'select mode'
+    # Desenhando o botão inicial 'select mode'
     def draw_main(self, text=''):
         pygame.draw.rect(self.screen, self.color_menu, (self.x, self.y, self.w, self.h), 0)
         if text != '':
@@ -33,7 +32,7 @@ class DropDown():
             msg = font.render(text, 1, (0, 0, 0))
             self.screen.blit(msg, (self.x + (self.w / 2 - msg.get_width() / 2), self.y + (self.h / 2 - msg.get_height() / 2)))
         
-    # Draw list of option 'calibration' and 'test'
+    # Desehando a lista de niveis
     def draw_opt(self, text=[]):
         if self.draw:
             for i, el in enumerate(text):
@@ -52,14 +51,14 @@ class DropDown():
                 self.screen.blit(msg, (self.x + (self.w / 2 - msg.get_width() / 2),
                                     self.y + (i+1)*self.h + (self.h / 2 - msg.get_height() / 2)))
 
-    # Detect when the mouse is within the 'select mode' box
+    # Detectando quando o mouse está em cima da caixa 'select mode'
     def choose_main(self, pos):
         if self.x < pos[0] < self.x + self.w and self.y < pos[1] < self.y + self.h:
             return True
         else:
             return False
    
-    # Detect when the mouse is within the option list
+    # Detectar quando o mouse está em cima da caixa dos niveis
     def choose_opt(self, pos):
         for opt in self.opt_list:
             box, text = opt
@@ -69,13 +68,13 @@ class DropDown():
         
         return None
 
+# Criando a função que inicializa o jogo
 def init_screen(window):
     clock = pygame.time.Clock()
 
-    # Declare element
+
     list1 = DropDown(COLOR_INACTIVE, COLOR_LIST_INACTIVE, WIDTH/3.25, HEIGHT/3, 400, 100, window)
 
-    # Run program
     menu = True
     while menu:
         window.fill((0, 0, 0))
@@ -84,10 +83,9 @@ def init_screen(window):
             pos = pygame.mouse.get_pos()
 
             if event.type == pygame.QUIT:
-                pygame.quit()
-                quit()
+                return QUIT
 
-            # For the menu
+            # Para o menu
             if event.type == pygame.MOUSEMOTION:
                 if list1.choose_main(pos):
                     list1.color_menu = COLOR_ACTIVE
