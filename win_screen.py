@@ -1,7 +1,7 @@
 import pygame
 from os import path
 
-from settings import IMG_DIR, FPS, PLAYING, QUIT
+from settings import IMG_DIR, FPS, INIT, QUIT
 
 # Criando a função que inicia a tela de Game Over
 def win_screen(window):
@@ -24,7 +24,7 @@ def win_screen(window):
 
             if event.type == pygame.KEYUP:
                 if event.key == pygame.K_SPACE:
-                    return PLAYING
+                    return INIT
 
         # A cada loop, redesenha o fundo 
         window.blit(background, background_rect)
