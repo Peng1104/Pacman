@@ -60,11 +60,6 @@ def draw_grid(window, color):
     for y in range(0, HEIGHT, TILESIZE):
         pygame.draw.line(window, color, (0, y), (WIDTH, y))
 
-# def rotate(surface, angle):
-#         rotated_surface = pygame.transform.rotozoom(surface, -angle, 1)
-#         rotated_rect = rotated_surface.get_rect(center = self.rect.center)
-#         return rotated_surface, rotated_rect
-
 # Função que executa o jogo
 def run(window, sprites, assets):
     clock = pygame.time.Clock()

@@ -18,6 +18,7 @@ def get_level_path(name):
 
     return level_map[name]
 
+# Carrega o conteúdo do arquivo do mapa
 def load_map(map_path):
     game_folder = path.dirname(__file__)
     

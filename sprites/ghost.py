@@ -20,7 +20,8 @@ class Ghost(pygame.sprite.Sprite):
 
         self.last_move = pygame.time.get_ticks()
         self.move_ticks = 300
-
+   
+    # Definindo o movimento dos fantasmas
     def move(self):
         if (not self.is_time_to_move()):
             return
@@ -33,6 +34,7 @@ class Ghost(pygame.sprite.Sprite):
         else:
             self.move_randomly()
         
+    # Definindo o movimento randômico dos fantasmas
     def move_randomly(self):
         possible_moves = [
             (0, -1),
@@ -42,7 +44,8 @@ class Ghost(pygame.sprite.Sprite):
         ]
 
         available_moves = list(filter(self.can_move, possible_moves))
-        
+
+        # Impedindo que o fantasma volte o mesmo caminho que ele acabou de andar
         opposite_direction = (self.dx * -1, self.dy * -1)
         if (len(available_moves) > 1 and opposite_direction in available_moves):
             available_moves.remove(opposite_direction)
@@ -55,26 +58,31 @@ class Ghost(pygame.sprite.Sprite):
 
             self.x = self.x + self.dx
             self.y = self.y + self.dy
-
+        
+    # Criando um timer para saber já é hora de mover
     def is_time_to_move(self):
         now = pygame.time.get_ticks()
         elapsed_ticks = now - self.last_move
 
         return elapsed_ticks >= self.move_ticks
 
+    # Update dos fantasmas
     def update(self):
         self.move()
         self.rect.x = self.x * TILESIZE
         self.rect.y = self.y * TILESIZE
         
+    # Definindo a chance do fantasma seguir reto quando houver um caminho adjacente
     def can_keep_moving(self):
         chance = random.random()
 
         return self.can_move((self.dx, self.dy)) and chance > 0.75
 
+    # Verifica se há uma parede à frente e se o movimento respeita os limites da tela
     def can_move(self, offset):
         return self.is_free_space(offset) and self.is_in_bounds(offset)
     
+    # Verificando se há uma parede à frente
     def is_free_space(self, offset):
         dx, dy = offset
         
@@ -84,6 +92,7 @@ class Ghost(pygame.sprite.Sprite):
         
         return True
     
+    # Verificando se o movimento respeita os limites da tela
     def is_in_bounds(self, offset):
         dx, dy = offset
 

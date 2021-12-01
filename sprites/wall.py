@@ -2,6 +2,7 @@ import pygame
 
 from settings import TILESIZE, BLUE
 
+# Criando a classe das barreiras
 class Wall(pygame.sprite.Sprite):
     def __init__(self, all_sprites, all_walls, x, y):
         self.groups = all_sprites, all_walls
