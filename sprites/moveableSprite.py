@@ -31,7 +31,7 @@ class MoveableSprite(BaseSprite):
 		self.dy = dy
 
 	def update(self) -> bool:
-		if (get_ticks() - self.lastMovementTime) >= self.moveDelay and canMoveTo(self.x + self.dx, self.y + self.dy):
+		if self.willMoveNow() and canMoveTo(self.x + self.dx, self.y + self.dy):
 			self.lastMovementTime = get_ticks()
 
 			self.x += self.dx
@@ -43,3 +43,6 @@ class MoveableSprite(BaseSprite):
 			return True
 		
 		return False
+	
+	def willMoveNow(self) -> bool:
+		return (get_ticks() - self.lastMovementTime) >= self.moveDelay

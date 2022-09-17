@@ -18,8 +18,7 @@ class Ghost(MoveableSprite):
 
     # Update dos fantasmas
     def update(self) -> bool:
-        if (get_ticks() - self.lastMovementTime) >= self.moveDelay: # Verifica se é hora de mover
-        
+        if self.willMoveNow(): # Verifica se é hora de mover
             if random.random() > 0.75 or not super().update(): # 25% de chance de mudar de direção
                 # Muda a direção do fantasma
 
