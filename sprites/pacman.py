@@ -13,7 +13,7 @@ class Pacman(MoveableSprite):
         self.updateImage = True
 
     # Notifiy to update the image
-    def updateSpeed(self, dx, dy) -> None:
+    def updateSpeed(self, dx=0, dy=0) -> None:
         super().updateSpeed(dx, dy)
         self.updateImage = True
 
@@ -33,6 +33,9 @@ class Pacman(MoveableSprite):
                     self.image = rotate(self.image, 90)
                 elif self.dx > 0:
                     self.image = rotate(self.image, -90)
+            
+            return True
+        return False
 
     # Rotacionando o pacman
     def rotate(self, angle) -> tuple[Surface, Rect]:

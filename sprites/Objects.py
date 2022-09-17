@@ -3,6 +3,7 @@ from settings import TILESIZE
 from Wall import canMoveTo
 
 class BaseSprite(pygame.sprite.Sprite):
+	
 	def __init__(self, x, y, image, *groups): # x pos, y pos, Sprite image and groups
 		super().__init__(groups) # Add to the given groups
 		
@@ -37,7 +38,7 @@ class MoveableSprite(BaseSprite):
 		
 		return False
 	
-	def updateSpeed(self, dx, dy) -> None:
+	def updateSpeed(self, dx=0, dy=0) -> None:
 		self.dx = dx
 		self.dy = dy
 

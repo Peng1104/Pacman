@@ -8,13 +8,13 @@ WALLS = Group() # Grupo contento todas as paredes
 # Verifica se é possível mover para a posição x, y
 def canMoveTo(x, y) -> bool:
 	# Verifica se as coordenadas estão dentro do mapa
-	if x < 0 or y < 0 or x >= WIDTH or y >= HEIGHT:
+	if x <= 0 or y <= 0 or x >= WIDTH or y >= HEIGHT:
 		return False
 	
 	# Verifica se as coordenadas estão dentro de uma parede
 	for wall in WALLS:
-		if wall.hasCollided(x, y):
-			return wall.rect.collidepoint(x, y)
+		if wall.rect.collidepoint(x, y):
+			return False
 	
 	return True
 

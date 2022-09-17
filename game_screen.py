@@ -1,11 +1,13 @@
+from doctest import script_from_examples
 import pygame
 
 # from assets import MOVE_SND, load_assets
 from assets import *
 from settings import FPS, GAMEOVER, GREY, HEIGHT, QUIT, TILESIZE, WIDTH, WIN
-from sprites import Coin, Wall, Ghost, Pacman
-from sprites.Coin import COINS
-from sprites.Ghost import GHOSTS
+from sprites.Coin import Coin, COINS
+from sprites.Ghost import Ghost, GHOSTS
+from sprites.Pacman import Pacman
+from sprites.Wall import Wall
 
 player = None
 
@@ -76,8 +78,7 @@ def run(window, sprites, assets):
                     if event.key == pygame.K_DOWN:
                         player.updateSpeed(dy=1)
         
-        for sprite in sprites:
-            sprite.update()
+        sprites.update()
 
         if state == PLAYING:
             ghost_hits = pygame.sprite.spritecollide(player, GHOSTS, False)
@@ -88,10 +89,8 @@ def run(window, sprites, assets):
                 colliding_duration = 300
 
             coin_hits = pygame.sprite.spritecollide(player, COINS, True)
-            
-            for coin in coin_hits:
-                score += 100
-                coin.kill()
+
+            score += len(coin_hits) * 100
 
             if len(COINS) == 0:
                 state = DONE
@@ -117,12 +116,9 @@ def run(window, sprites, assets):
                     state = DONE
                     return GAMEOVER
                 else:
-                    newPlayer = Pacman(player.x, player.y, sprites)
-                    
-                    player.kill()
                     score -= 1000
-                    
-                    player = newPlayer
+
+                    player.updateSpeed(dx=1)
 
                     # time.sleep(1.5)
                     # state = DONE
