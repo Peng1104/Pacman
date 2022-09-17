@@ -10,12 +10,12 @@ from settings import *
 
 # Função que identifica qual mapa foi escolhido
 def get_level_path(name):
+    
     level_map = {
         'Level 1': 'maps/map.txt',
         'Level 2': 'maps/map2.txt',
         'Level 3': 'maps/map3.txt'
     }
-
     return level_map[name]
 
 # Carrega o conteúdo do arquivo do mapa
@@ -30,12 +30,14 @@ def load_map(map_path):
     return map_data
 
 pygame.init()
+pygame.mixer.music.set_volume(0.4)
 
 window = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption('Pac-man!')
 
 state = INIT
 selected_level = None
+
 while state != QUIT:
     if state == INIT:
         selected_level = init_screen(window)
@@ -49,4 +51,4 @@ while state != QUIT:
     elif state == WIN:
         state = win_screen(window)
 
-pygame.quit() 
+pygame.quit()

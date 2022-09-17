@@ -1,14 +1,14 @@
-import pygame
-
+from pygame.sprite import Group
+from Objects import BaseSprite
 from assets import COIN_IMG
 from settings import TILESIZE, COIN_WIDTH, COIN_HEIGHT
 
-# Criando a classe das moedas
-class Coin(pygame.sprite.Sprite):
-    def __init__(self, assets, x, y):
-        pygame.sprite.Sprite.__init__(self)
+COINS = Group() # Grupo contento todas as moedas
 
-        self.image = assets[COIN_IMG]
-        self.rect = self.image.get_rect()
-        self.rect.x = x * TILESIZE + ((TILESIZE - COIN_WIDTH) // 2)
-        self.rect.y = y * TILESIZE + ((TILESIZE - COIN_HEIGHT) // 2) 
+# A Classe das moedas
+class Coin(BaseSprite):
+	
+	def __init__(self, x, y, allSprites):
+		super().__init__(x, y, COIN_IMG, COINS, allSprites)
+		self.rect.x = x * TILESIZE + ((TILESIZE - COIN_WIDTH) // 2)
+		self.rect.y = y * TILESIZE + ((TILESIZE - COIN_HEIGHT) // 2)

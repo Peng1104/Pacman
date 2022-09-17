@@ -1,57 +1,37 @@
 import pygame
-import time
 
 # from assets import MOVE_SND, load_assets
 from assets import *
 from settings import FPS, GAMEOVER, GREY, HEIGHT, QUIT, TILESIZE, WIDTH, WIN
-from sprites.coin import Coin
-from sprites.ghost import Ghost
-from sprites.pacman import Pacman
-from sprites.wall import Wall
+from sprites import Coin, Wall, Ghost, Pacman
+from sprites.Coin import COINS
+from sprites.Ghost import GHOSTS
+
+player = None
 
 # Função que chama o carregamento dos assets e do mapa
 def game_screen(window, map_data): 
     assets = load_assets()
-    sprites = build_map(assets, map_data)
+    
+    sprites = pygame.sprite.Group()
 
-    return run(window, sprites, assets)
+    global player
 
-# Função que cria o mapa
-def build_map(assets, map_data):
-    sprites = {
-        'all_sprites': pygame.sprite.Group(),
-        'all_players': pygame.sprite.Group(),
-        'all_ghosts': pygame.sprite.Group(),
-        'all_walls': pygame.sprite.Group(),
-        'all_coins': pygame.sprite.Group(),
-    }
-
-    player = None
-
-    for row, tiles in enumerate(map_data):
-        for col, tile in enumerate(tiles):
+    for x, tiles in enumerate(map_data):
+        for y, tile in enumerate(tiles):
             if tile == '#':
-                wall = Wall(sprites['all_sprites'], sprites['all_walls'], col, row)
-                sprites['all_sprites'].add(wall)
-                sprites['all_walls'].add(wall)
+                Wall(y, x, sprites)
             elif tile == '@':
-                player = Pacman(assets, col, row, sprites['all_walls'])
-                sprites['player'] = player
-                sprites['all_sprites'].add(player)
-                sprites['all_players'].add(player)
+                player = Pacman(y, x, sprites)
             elif tile =='$':
-                ghost = Ghost(assets, col, row, sprites['all_walls'])
-                sprites['all_sprites'].add(ghost)
-                sprites['all_ghosts'].add(ghost)
+                Ghost(y, x, sprites)
             elif tile == '.':
-                coin = Coin(assets, col, row)
-                sprites['all_sprites'].add(coin)
-                sprites['all_coins'].add(coin)
+                Coin(y, x, sprites)
 
     if player == None:
         raise 'Mapa falho'
 
-    return sprites
+    return run(window, sprites, assets)
 
 # Função que desenha as linhas do mapa
 def draw_grid(window, color):
@@ -65,16 +45,18 @@ def run(window, sprites, assets):
     clock = pygame.time.Clock()
     pygame.key.set_repeat(300, 250)
 
-    player = sprites['player']
-
     score = 0
     lives = 2
     DONE = 0
     PLAYING = 1
     COLLIDING = 2
 
+    global player
+
     state = PLAYING
+
     assets[MUSIC_SND].play()
+
     while state != DONE:
         clock.tick(FPS)
 
@@ -86,35 +68,38 @@ def run(window, sprites, assets):
                 if event.type == pygame.KEYDOWN:
                     # assets[MOVE_SND].play()
                     if event.key == pygame.K_LEFT:
-                        player.move(dx = -1) 
+                        player.updateSpeed(dx=-1) 
                     if event.key == pygame.K_RIGHT:
-                        player.move(dx = 1)
+                        player.updateSpeed(dx=1)
                     if event.key == pygame.K_UP:
-                        player.move(dy = -1)
+                        player.updateSpeed(dy=-1)
                     if event.key == pygame.K_DOWN:
-                        player.move(dy = 1)
-
-        sprites['all_sprites'].update()
+                        player.updateSpeed(dy=1)
+        
+        for sprite in sprites:
+            sprite.update()
 
         if state == PLAYING:
-            ghost_hits = pygame.sprite.spritecollide(player, sprites['all_ghosts'], False)
+            ghost_hits = pygame.sprite.spritecollide(player, GHOSTS, False)
 
             if len(ghost_hits) > 0:
                 state = COLLIDING
                 colliding_tick = pygame.time.get_ticks()
                 colliding_duration = 300
 
-            coin_hits = pygame.sprite.spritecollide(player, sprites['all_coins'], True)
+            coin_hits = pygame.sprite.spritecollide(player, COINS, True)
+            
             for coin in coin_hits:
                 score += 100
+                coin.kill()
 
-            if len(sprites['all_coins']) == 0:
+            if len(COINS) == 0:
                 state = DONE
-
                 return WIN
-
+        
         if state == COLLIDING:
             now = pygame.time.get_ticks()
+            
             if now - colliding_tick > colliding_duration:
                 assets[DEATH_SND].play()
                 lives -= 1
@@ -132,15 +117,12 @@ def run(window, sprites, assets):
                     state = DONE
                     return GAMEOVER
                 else:
-                    new_player = Pacman(assets, player.x, player.y, sprites['all_walls'])
-
+                    newPlayer = Pacman(player.x, player.y, sprites)
+                    
                     player.kill()
                     score -= 1000
-
-                    player = new_player
-                    sprites['player'] = player
-                    sprites['all_sprites'].add(player)
-                    sprites['all_players'].add(player)
+                    
+                    player = newPlayer
 
                     # time.sleep(1.5)
                     # state = DONE
@@ -149,14 +131,11 @@ def run(window, sprites, assets):
         
         window.fill((0, 0, 0))
 
-        sprites['all_coins'].draw(window)
-        sprites['all_players'].draw(window)
-        sprites['all_ghosts'].draw(window)
-        sprites['all_walls'].draw(window)
+        sprites.draw(window)
         
-        draw_grid(window, color=GREY)
+        draw_grid(window, GREY)
         
-         # Desenhando o score
+        # Desenhando o score
         text_surface = assets['score_font'].render("{:08d}".format(score), True, (255, 255, 0))
         text_rect = text_surface.get_rect()
         text_rect.midtop = (WIDTH / 2,  (TILESIZE - FONT_SIZE) / 2 )
@@ -168,4 +147,4 @@ def run(window, sprites, assets):
         text_rect.topleft = (TILESIZE,  (TILESIZE - FONT_SIZE) / 2)
         window.blit(text_surface, text_rect)
 
-        pygame.display.update() 
+        pygame.display.update()

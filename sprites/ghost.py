@@ -1,102 +1,54 @@
-import pygame
 import random
-
+from pygame.sprite import Group
+from pygame.time import get_ticks
+from Objects import MoveableSprite
 from assets import GHOST_IMG
-from settings import HEIGHT, TILESIZE, WIDTH
+from Wall import canMoveTo
+
+GHOSTS = Group() # Grupo contento todos os fantasmas
+
+ALL_MOVEMENT_OPTIONS = [(1, 0), (-1, 0), (0, 1), (0, -1)] # Movimentos possíveis
 
 # Criando a classe dos fantasmas
-class Ghost(pygame.sprite.Sprite):
-    def __init__(self, assets, x, y, all_walls = []):
-        pygame.sprite.Sprite.__init__(self)
+class Ghost(MoveableSprite):
+    
+    # Cria um novo fantasma na posição x, y
+    def __init__(self, x, y, allSprites, moveDelay=300):
+        super().__init__(x, y, GHOST_IMG, GHOSTS, allSprites)
 
-        self.all_walls = all_walls
-
-        self.image = assets[GHOST_IMG]
-        self.rect = self.image.get_rect()
-        self.dx = -1
-        self.dy = 0
-        self.x = x
-        self.y = y
-
-        self.last_move = pygame.time.get_ticks()
-        self.move_ticks = 300
-   
-    # Definindo o movimento dos fantasmas
-    def move(self):
-        if (not self.is_time_to_move()):
-            return
-        
-        self.last_move = pygame.time.get_ticks()
-        
-        if (self.can_keep_moving()):
-            self.x += self.dx
-            self.y += self.dy
-        else:
-            self.move_randomly()
-        
-    # Definindo o movimento randômico dos fantasmas
-    def move_randomly(self):
-        possible_moves = [
-            (0, -1),
-            (1, 0),
-            (0, 1),
-            (-1, 0)
-        ]
-
-        available_moves = list(filter(self.can_move, possible_moves))
-
-        # Impedindo que o fantasma volte o mesmo caminho que ele acabou de andar
-        opposite_direction = (self.dx * -1, self.dy * -1)
-        if (len(available_moves) > 1 and opposite_direction in available_moves):
-            available_moves.remove(opposite_direction)
-
-        if (len(available_moves) > 0):
-            dx, dy = random.choice(available_moves)
-
-            self.dx = dx
-            self.dy = dy
-
-            self.x = self.x + self.dx
-            self.y = self.y + self.dy
-        
-    # Criando um timer para saber já é hora de mover
-    def is_time_to_move(self):
-        now = pygame.time.get_ticks()
-        elapsed_ticks = now - self.last_move
-
-        return elapsed_ticks >= self.move_ticks
+        self.dx = -1 # Velocidade inicial do fantasma
+        self.lastMovementTime = get_ticks()
+        self.moveDelay = moveDelay
 
     # Update dos fantasmas
-    def update(self):
-        self.move()
-        self.rect.x = self.x * TILESIZE
-        self.rect.y = self.y * TILESIZE
+    def update(self) -> bool:
+        if (get_ticks() - self.lastMovementTime) >= self.moveDelay: # Verifica se é hora de mover
+            self.lastMovementTime = get_ticks() # Atualiza o tempo do último movimento
         
-    # Definindo a chance do fantasma seguir reto quando houver um caminho adjacente
-    def can_keep_moving(self):
-        chance = random.random()
-
-        return self.can_move((self.dx, self.dy)) and chance > 0.75
-
-    # Verifica se há uma parede à frente e se o movimento respeita os limites da tela
-    def can_move(self, offset):
-        return self.is_free_space(offset) and self.is_in_bounds(offset)
-    
-    # Verificando se há uma parede à frente
-    def is_free_space(self, offset):
-        dx, dy = offset
+            if random.random() >= 0.75: # 25% de chance de mudar de direção
+                self.changeDirection()
+                return super().update()
+            
+            if not super().update():
+                self.changeDirection()
+                return super().update()
         
-        for wall in self.all_walls:
-            if wall.x == self.x + dx and wall.y == self.y + dy:
-                return False
-        
-        return True
-    
-    # Verificando se o movimento respeita os limites da tela
-    def is_in_bounds(self, offset):
-        dx, dy = offset
+        return False
 
-        final_x = self.x + dx
-        final_y = self.y + dy
+    # Muda a direção do fantasma
+    def changeDirection(self) -> None:
+        options = list(filter(self.canMoveTo, ALL_MOVEMENT_OPTIONS)) # Lista de opções de movimento
 
-        return final_x > 0 and final_x < WIDTH and final_y > 0 and final_y < HEIGHT
+        if len(options) == 1:
+            self.updateSpeed(*options[0]) # Atualiza a velocidade do fantasma
+        else:
+            options.remove((self.dx, self.dy)) # Remove a direção atual
+
+            if len(options) > 1:
+                options.remove((-self.dx, -self.dy)) # Remove a direção oposta se houver mais de uma opção
+            
+            self.updateSpeed(*random.choice(options)) # Escolhe uma nova direção aleatória
+
+    # Verifica se o fantasma pode se mover para a posição x, y usado em changeDirection
+    def canMoveTo(self, x, y) -> bool: 
+        return canMoveTo(self.x + x, self.y + y)

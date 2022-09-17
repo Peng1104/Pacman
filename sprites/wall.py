@@ -1,16 +1,27 @@
-import pygame
+from pygame import Surface
+from pygame.sprite import Group
+from Objects import BaseSprite
+from settings import TILESIZE, BLUE, WIDTH, HEIGHT
 
-from settings import TILESIZE, BLUE
+WALLS = Group() # Grupo contento todas as paredes
 
-# Criando a classe das barreiras
-class Wall(pygame.sprite.Sprite):
-    def __init__(self, all_sprites, all_walls, x, y):
-        self.groups = all_sprites, all_walls
-        pygame.sprite.Sprite.__init__(self, self.groups)
-        self.image = pygame.Surface((TILESIZE, TILESIZE))
-        self.image.fill(BLUE)
-        self.rect = self.image.get_rect()
-        self.x = x
-        self.y = y
-        self.rect.x = x * TILESIZE
-        self.rect.y = y * TILESIZE 
+# Verifica se é possível mover para a posição x, y
+def canMoveTo(x, y) -> bool:
+	# Verifica se as coordenadas estão dentro do mapa
+	if x < 0 or y < 0 or x >= WIDTH or y >= HEIGHT:
+		return False
+	
+	# Verifica se as coordenadas estão dentro de uma parede
+	for wall in WALLS:
+		if wall.hasCollided(x, y):
+			return wall.rect.collidepoint(x, y)
+	
+	return True
+
+# Classe das paredes
+class Wall(BaseSprite):
+
+	# Cria uma nova parede na posição x, y
+	def __init__(self, x, y, allSprites):
+		super().__init__(x, y, Surface((TILESIZE, TILESIZE)), WALLS, allSprites)
+		self.image.fill(BLUE)

@@ -7,7 +7,6 @@ FNT_DIR = path.join(path.dirname(__file__), 'assets', 'font')
 BLUE = (0, 0, 150)
 GREY = (100, 100, 100)
 
-
 WIDTH = 1024
 HEIGHT = 768
 SCREEN = (1024, 768)
