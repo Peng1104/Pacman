@@ -1,14 +1,14 @@
 from pygame.transform import rotate, flip
 from pygame.surface import Surface
 from pygame.rect import Rect
-from Objects import MoveableSprite
-from assets import PACMAN_IMG
+from sprites.moveableSprite import MoveableSprite
 
 # Criando a classe pacman
 class Pacman(MoveableSprite):
 
-    def __init__(self, x, y, allSprites):
-        super().__init__(x, y, PACMAN_IMG, allSprites)
+    def __init__(self, x, y, img, allSprites, moveDelay=120):
+        super().__init__(x, y, img, moveDelay, allSprites)
+        self.originalImage = img
         self.dx = 1 # Change the start speed of the pacman
         self.updateImage = True
 
@@ -24,15 +24,15 @@ class Pacman(MoveableSprite):
             if self.updateImage:
                 self.updateImage = False
 
-                if self.dy < 0:
-                    self.image = flip(PACMAN_IMG, False, True)
-                elif self.dy > 0:
-                    self.image = PACMAN_IMG
-                
                 if self.dx < 0:
-                    self.image = rotate(self.image, 90)
+                    self.image = flip(self.originalImage, True, False)
                 elif self.dx > 0:
-                    self.image = rotate(self.image, -90)
+                    self.image = self.originalImage
+                
+                if self.dy < 0:
+                    self.image = rotate(self.originalImage, 90)
+                elif self.dy > 0:
+                    self.image = rotate(self.originalImage, -90)
             
             return True
         return False

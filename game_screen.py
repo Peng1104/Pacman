@@ -4,10 +4,10 @@ import pygame
 # from assets import MOVE_SND, load_assets
 from assets import *
 from settings import FPS, GAMEOVER, GREY, HEIGHT, QUIT, TILESIZE, WIDTH, WIN
-from sprites.Coin import Coin, COINS
-from sprites.Ghost import Ghost, GHOSTS
-from sprites.Pacman import Pacman
-from sprites.Wall import Wall
+from sprites.coin import Coin, COINS
+from sprites.ghost import Ghost, GHOSTS
+from sprites.pacman import Pacman
+from sprites.wall import Wall
 
 player = None
 
@@ -19,16 +19,20 @@ def game_screen(window, map_data):
 
     global player
 
+    player_img = assets[PACMAN_IMG]
+    ghost_img = assets[GHOST_IMG]
+    coin_img = assets[COIN_IMG]
+
     for x, tiles in enumerate(map_data):
         for y, tile in enumerate(tiles):
             if tile == '#':
                 Wall(y, x, sprites)
             elif tile == '@':
-                player = Pacman(y, x, sprites)
+                player = Pacman(y, x, player_img, sprites)
             elif tile =='$':
-                Ghost(y, x, sprites)
+                Ghost(y, x, ghost_img, sprites)
             elif tile == '.':
-                Coin(y, x, sprites)
+                Coin(y, x, coin_img, sprites)
 
     if player == None:
         raise 'Mapa falho'

@@ -1,6 +1,6 @@
 from pygame import Surface
 from pygame.sprite import Group
-from Objects import BaseSprite
+from sprites.baseSprite import BaseSprite
 from settings import TILESIZE, BLUE, WIDTH, HEIGHT
 
 WALLS = Group() # Grupo contento todas as paredes
@@ -10,10 +10,10 @@ def canMoveTo(x, y) -> bool:
 	# Verifica se as coordenadas estão dentro do mapa
 	if x <= 0 or y <= 0 or x >= WIDTH or y >= HEIGHT:
 		return False
-	
+		
 	# Verifica se as coordenadas estão dentro de uma parede
 	for wall in WALLS:
-		if wall.rect.collidepoint(x, y):
+		if wall.x == x and wall.y == y:
 			return False
 	
 	return True

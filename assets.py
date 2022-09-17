@@ -5,9 +5,9 @@ from pygame.mixer import Sound
 from pygame.font import Font
 from settings import *
 
-PACMAN_IMG = scale(load(join(IMG_DIR, 'pacman.png')).convert_alpha(), (PACMAN_WIDTH, PACMAN_HEIGHT)) # 32 x 32 pixels
-COIN_IMG = scale(load(join(IMG_DIR, 'coin.png')).convert_alpha(), (COIN_WIDTH, COIN_HEIGHT)) # 20 x 20 pixels
-GHOST_IMG = scale(load(join(IMG_DIR, 'ghost.png')).convert_alpha(), (GHOST_WIDTH, GHOST_HEIGHT)) # 32 x 32 pixels
+PACMAN_IMG = 'pacman'
+COIN_IMG = 'coin'
+GHOST_IMG = 'ghost'
 
 MOVE_SND = 'move'
 DEATH_SND = 'death'
@@ -16,7 +16,12 @@ MUSIC_SND = 'music'
 SCORE_FONT = 'score_font'
 
 def load_assets():
+
     assets = {}
+
+    assets[PACMAN_IMG] = scale(load(join(IMG_DIR, 'pacman.png')).convert_alpha(), (PACMAN_WIDTH, PACMAN_HEIGHT)) # 32 x 32 pixels
+    assets[COIN_IMG] = scale(load(join(IMG_DIR, 'coin.png')).convert_alpha(), (COIN_WIDTH, COIN_HEIGHT)) # 20 x 20 pixels
+    assets[GHOST_IMG] = scale(load(join(IMG_DIR, 'ghost.png')).convert_alpha(), (GHOST_WIDTH, GHOST_HEIGHT)) # 32 x 32 pixels
 
     # pygame.mixer.music.load(join(SND_DIR, 'tgfcoder-FrozenJam-SeamlessLoop.ogg'))
     
