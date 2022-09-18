@@ -52,37 +52,44 @@ def run(window, sprites, assets):
     pygame.key.set_repeat(300, 250)
 
     score = 0
-    lives = 2
-    DONE = 0
-    PLAYING = 1
-    COLLIDING = 2
+    lives = 3
+    PLAYING = 0
+    COLLIDING = 1
+    WAITING = 3
 
     global player
 
-    state = PLAYING
+    state = WAITING
 
     assets[MUSIC_SND].play()
 
-    while state != DONE:
+    while True:
         clock.tick(FPS)
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                state = DONE
                 return QUIT
-            if state == PLAYING:
-                if event.type == pygame.KEYDOWN:
-                    # assets[MOVE_SND].play()
-                    if event.key == pygame.K_LEFT:
-                        player.updateSpeed(dx=-1) 
-                    if event.key == pygame.K_RIGHT:
-                        player.updateSpeed(dx=1)
-                    if event.key == pygame.K_UP:
-                        player.updateSpeed(dy=-1)
-                    if event.key == pygame.K_DOWN:
-                        player.updateSpeed(dy=1)
+            
+            if state is not COLLIDING and event.type == pygame.KEYDOWN:
+                
+                if event.key == pygame.K_LEFT:
+                    player.updateSpeed(dx=-1)
+                    state = PLAYING
+                
+                elif event.key == pygame.K_RIGHT:
+                    player.updateSpeed(dx=1)
+                    state = PLAYING
+                
+                elif event.key == pygame.K_UP:
+                    player.updateSpeed(dy=-1)
+                    state = PLAYING
+                
+                elif event.key == pygame.K_DOWN:
+                    player.updateSpeed(dy=1)
+                    state = PLAYING
         
-        sprites.update()
+        if state is not WAITING:
+            sprites.update()
 
         if state == PLAYING:
             ghost_hits = pygame.sprite.spritecollide(player, GHOSTS, False)
@@ -97,7 +104,6 @@ def run(window, sprites, assets):
             score += len(coin_hits) * 100
 
             if len(COINS) == 0:
-                state = DONE
                 return WIN
         
         if state == COLLIDING:
@@ -117,7 +123,6 @@ def run(window, sprites, assets):
                         pygame.display.flip()
                         clock.tick(30)
 
-                    state = DONE
                     return GAMEOVER
                 else:
                     score -= 1000

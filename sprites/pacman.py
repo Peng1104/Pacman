@@ -9,7 +9,6 @@ class Pacman(MoveableSprite):
     def __init__(self, x, y, img, allSprites, moveDelay=120):
         super().__init__(x, y, img, moveDelay, allSprites)
         self.originalImage = img
-        self.dx = 1 # Change the start speed of the pacman
         self.updateImage = True
 
     # Notifiy to update the image
