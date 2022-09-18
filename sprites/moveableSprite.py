@@ -14,24 +14,12 @@ class MoveableSprite(BaseSprite):
 		self.dx = 0
 		self.dy = 0
 	
-	def teleport(self, x, y) -> bool:
-		if canMoveTo(x, y):
-			self.x = x
-			self.y = y
-
-			self.dx = 0
-			self.dy = 0
-
-			return self.update()
-		
-		return False
-	
 	def updateSpeed(self, dx=0, dy=0) -> None:
 		self.dx = dx
 		self.dy = dy
 
 	def update(self) -> bool:
-		if self.willMoveNow() and canMoveTo(self.x + self.dx, self.y + self.dy):
+		if self._willMoveNow() and canMoveTo(self.x + self.dx, self.y + self.dy):
 			self.lastMovementTime = get_ticks()
 
 			self.x += self.dx
@@ -44,5 +32,5 @@ class MoveableSprite(BaseSprite):
 		
 		return False
 	
-	def willMoveNow(self) -> bool:
+	def _willMoveNow(self) -> bool:
 		return (get_ticks() - self.lastMovementTime) >= self.moveDelay

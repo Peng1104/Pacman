@@ -1,6 +1,5 @@
 import random
 from pygame.sprite import Group
-from pygame.time import get_ticks
 from sprites.moveableSprite import MoveableSprite
 from sprites.wall import canMoveTo
 
@@ -14,11 +13,10 @@ class Ghost(MoveableSprite):
     # Cria um novo fantasma na posição x, y
     def __init__(self, x, y, img, allSprites, moveDelay=300):
         super().__init__(x, y, img, moveDelay, GHOSTS, allSprites)
-        self.dx = -1 # Velocidade inicial do fantasma
 
     # Update dos fantasmas
     def update(self) -> bool:
-        if self.willMoveNow(): # Verifica se é hora de mover
+        if self._willMoveNow(): # Verifica se é hora de mover
             if random.random() > 0.75 or not super().update(): # 25% de chance de mudar de direção
                 # Muda a direção do fantasma
 

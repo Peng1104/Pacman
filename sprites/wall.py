@@ -13,7 +13,7 @@ def canMoveTo(x, y) -> bool:
 		
 	# Verifica se as coordenadas estão dentro de uma parede
 	for wall in WALLS:
-		if wall.x == x and wall.y == y:
+		if wall.inside(x, y):
 			return False
 	
 	return True
@@ -25,3 +25,6 @@ class Wall(BaseSprite):
 	def __init__(self, x, y, allSprites):
 		super().__init__(x, y, Surface((TILESIZE, TILESIZE)), WALLS, allSprites)
 		self.image.fill(BLUE)
+	
+	def inside(self, x, y) -> bool:
+		return self.x == x and self.y == y
