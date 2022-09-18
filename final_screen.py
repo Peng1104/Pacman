@@ -31,5 +31,3 @@ def final_screen(window):
 
         # Depois de desenhar tudo, inverte o display.
         pygame.display.flip()
-
-    return state
