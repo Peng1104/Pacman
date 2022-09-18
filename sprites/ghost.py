@@ -11,8 +11,8 @@ ALL_MOVEMENT_OPTIONS = [(1, 0), (-1, 0), (0, 1), (0, -1)] # Movimentos possívei
 class Ghost(MoveableSprite):
     
     # Cria um novo fantasma na posição x, y
-    def __init__(self, x, y, img, allSprites, moveDelay=300):
-        super().__init__(x, y, img, moveDelay, GHOSTS, allSprites)
+    def __init__(self, x, y, img, moveDelay=300):
+        super().__init__(x, y, img, moveDelay, GHOSTS)
 
     # Update dos fantasmas
     def update(self) -> bool:

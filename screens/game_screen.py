@@ -7,7 +7,7 @@ from settings import FPS, GAMEOVER, GREY, HEIGHT, QUIT, TILESIZE, WIDTH, WIN
 from sprites.coin import Coin, COINS
 from sprites.ghost import Ghost, GHOSTS
 from sprites.pacman import Pacman
-from sprites.wall import Wall
+from sprites.wall import Wall, WALLS
 
 player = None
 
@@ -15,29 +15,28 @@ player = None
 def game_screen(window, map_data): 
     assets = load_assets()
     
-    sprites = pygame.sprite.Group()
-
     global player
 
-    player_img = assets[PACMAN_IMG]
-    ghost_img = assets[GHOST_IMG]
-    coin_img = assets[COIN_IMG]
+    playerImg = assets[PACMAN_IMG]
+    ghostImg = assets[GHOST_IMG]
+    coinImg = assets[COIN_IMG]
 
     for x, tiles in enumerate(map_data):
         for y, tile in enumerate(tiles):
             if tile == '#':
-                Wall(y, x, sprites)
+                Wall(y, x)
             elif tile == '@':
-                player = Pacman(y, x, player_img, sprites)
+                player = Pacman(y, x, playerImg)
             elif tile =='$':
-                Ghost(y, x, ghost_img, sprites)
+                Ghost(y, x, ghostImg)
+                Coin(y, x, coinImg)
             elif tile == '.':
-                Coin(y, x, coin_img, sprites)
+                Coin(y, x, coinImg)
 
     if player == None:
         raise 'Mapa falho'
 
-    return run(window, sprites, assets)
+    return run(window, assets)
 
 # Função que desenha as linhas do mapa
 def draw_grid(window, color):
@@ -47,15 +46,16 @@ def draw_grid(window, color):
         pygame.draw.line(window, color, (0, y), (WIDTH, y))
 
 # Função que executa o jogo
-def run(window, sprites, assets):
+def run(window, assets):
     clock = pygame.time.Clock()
     pygame.key.set_repeat(300, 250)
 
     score = 0
     lives = 3
+
     PLAYING = 0
     COLLIDING = 1
-    WAITING = 3
+    WAITING = 2
 
     global player
 
@@ -68,6 +68,7 @@ def run(window, sprites, assets):
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
+                endGame()
                 return QUIT
             
             if state is not COLLIDING and event.type == pygame.KEYDOWN:
@@ -89,7 +90,8 @@ def run(window, sprites, assets):
                     state = PLAYING
         
         if state is not WAITING:
-            sprites.update()
+            GHOSTS.update()
+            player.update()
 
         if state == PLAYING:
             ghost_hits = pygame.sprite.spritecollide(player, GHOSTS, False)
@@ -104,6 +106,7 @@ def run(window, sprites, assets):
             score += len(coin_hits) * 100
 
             if len(COINS) == 0:
+                endGame()
                 return WIN
         
         if state == COLLIDING:
@@ -122,7 +125,8 @@ def run(window, sprites, assets):
                         window.blit(pacman_rotated, pacman_rotated_rect)
                         pygame.display.flip()
                         clock.tick(30)
-
+                    
+                    endGame()
                     return GAMEOVER
                 else:
                     score -= 1000
@@ -135,7 +139,10 @@ def run(window, sprites, assets):
                     
         window.fill((0, 0, 0))
 
-        sprites.draw(window)
+        WALLS.draw(window)
+        COINS.draw(window)
+        GHOSTS.draw(window)
+        window.blit(player.image, (player.rect.x, player.rect.y))
         
         draw_grid(window, GREY)
         
@@ -152,3 +159,11 @@ def run(window, sprites, assets):
         window.blit(text_surface, text_rect)
 
         pygame.display.update()
+
+def endGame() -> None:
+    global player
+
+    WALLS.empty()
+    COINS.empty()
+    GHOSTS.empty()
+    player = None

@@ -22,9 +22,6 @@ def canMoveTo(x, y) -> bool:
 class Wall(BaseSprite):
 
 	# Cria uma nova parede na posição x, y
-	def __init__(self, x, y, allSprites):
-		super().__init__(x, y, Surface((TILESIZE, TILESIZE)), WALLS, allSprites)
+	def __init__(self, x, y):
+		super().__init__(x, y, Surface((TILESIZE, TILESIZE)), WALLS)
 		self.image.fill(BLUE)
-	
-	def inside(self, x, y) -> bool:
-		return self.x == x and self.y == y

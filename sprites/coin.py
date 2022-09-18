@@ -7,7 +7,7 @@ COINS = Group() # Grupo contento todas as moedas
 # A Classe das moedas
 class Coin(BaseSprite):
 
-	def __init__(self, x, y, img, allSprites):
-		super().__init__(x, y, img, COINS, allSprites)
+	def __init__(self, x, y, img):
+		super().__init__(x, y, img, COINS)
 		self.rect.x = x * TILESIZE + (TILESIZE - COIN_WIDTH) // 2
 		self.rect.y = y * TILESIZE + (TILESIZE - COIN_HEIGHT) // 2

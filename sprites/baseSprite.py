@@ -16,3 +16,6 @@ class BaseSprite(Sprite):
 
 	def update(self) -> bool:
 		return False
+
+	def inside(self, x, y) -> bool:
+		return self.x == x and self.y == y

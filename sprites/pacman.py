@@ -6,10 +6,10 @@ from sprites.moveableSprite import MoveableSprite
 # Criando a classe pacman
 class Pacman(MoveableSprite):
 
-    def __init__(self, x, y, img, allSprites, moveDelay=120):
-        super().__init__(x, y, img, moveDelay, allSprites)
+    def __init__(self, x, y, img, moveDelay=120):
+        super().__init__(x, y, img, moveDelay)
         self.originalImage = img
-        self.updateImage = True
+        self.updateImage = False
 
     # Notifiy to update the image
     def updateSpeed(self, dx=0, dy=0) -> None:
