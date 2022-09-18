@@ -1,10 +1,10 @@
 import pygame
 
 from os import path
-from game_screen import game_screen
-from init_screen import init_screen
-from final_screen import final_screen
-from win_screen import win_screen
+from screens.game_screen import game_screen
+from screens.init_screen import init_screen
+from screens.final_screen import final_screen
+from screens.win_screen import win_screen
 
 from settings import *
 
