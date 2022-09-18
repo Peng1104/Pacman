@@ -16,6 +16,10 @@ class Pacman(MoveableSprite):
         super().updateSpeed(dx, dy)
         self.updateImage = True
 
+    def reset(self) -> None:
+        self.image = self.originalImage
+        super().reset()
+
     # Update The pacman image
     def update(self) -> bool:
         if super().update():

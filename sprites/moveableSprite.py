@@ -12,16 +12,22 @@ class MoveableSprite(BaseSprite):
 		self.startY = y
 		
 		self.moveDelay = moveDelay
-		self.lastMovementTime = get_ticks()
+		self.lastMovementTime = get_ticks() - moveDelay
 
 		self.dx = 0
 		self.dy = 0
 
-	def backToStart(self) -> None:
+	def reset(self) -> None:
 		self.x = self.startX
 		self.y = self.startY
+		
 		self.rect.x = self.startX * TILESIZE
 		self.rect.y = self.startY * TILESIZE
+
+		self.lastMovementTime = get_ticks() - self.moveDelay
+
+		self.dx = 0
+		self.dy = 0
 	
 	def updateSpeed(self, dx=0, dy=0) -> None:
 		self.dx = dx

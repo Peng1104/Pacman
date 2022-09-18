@@ -126,14 +126,13 @@ def run(window, sprites, assets):
                     return GAMEOVER
                 else:
                     score -= 1000
+                    state = WAITING
+                    
+                    player.reset()
 
-                    player.updateSpeed(dx=1)
-
-                    # time.sleep(1.5)
-                    # state = DONE
-            
-                state = PLAYING
-        
+                    for ghost in GHOSTS:
+                        ghost.reset()
+                    
         window.fill((0, 0, 0))
 
         sprites.draw(window)
