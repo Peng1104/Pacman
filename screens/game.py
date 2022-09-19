@@ -167,8 +167,9 @@ def endGame() -> None:
     WALLS.empty()
     COINS.empty()
     GHOSTS.empty()
-    player = 
+    player = None
+
     
 
-class GameScreen(BaseScreen):
-    __init__
+#class GameScreen(BaseScreen):
+    #__init__

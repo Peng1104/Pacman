@@ -1,21 +1,26 @@
 import pygame
 from os import path
+from screens.baseScreen import BaseScreen
 
-from settings import IMG_DIR, FPS, INIT, QUIT
+from settings import IMG_DIR, FPS, INIT, QUIT, WIN
 
-# Criando a função que inicia a tela de Game Over
-def win_screen(window):
-    # Variável para o ajuste de velocidade
-    clock = pygame.time.Clock()
+class WinScreen(BaseScreen):
 
-    # Carrega o fundo da tela inicial
-    background = pygame.image.load(path.join(IMG_DIR, 'win.png')).convert()
-    background_rect = background.get_rect()
+    def __init__(self, window):
+       super().__init__(window)
 
-    while True:
-        # Ajusta a velocidade do jogo.
-        clock.tick(FPS)
-
+    def draw(self) -> None:
+        # Carrega o fundo da tela inicial
+        background = pygame.image.load(path.join(IMG_DIR, 'win.png')).convert()
+        background_rect = background.get_rect()
+        
+        self.window.blit(background, background_rect)
+        
+        # Depois de desenhar tudo, inverte o display.
+        pygame.display.flip()
+    
+    def getNextState(self) -> int:
+        
         # Processa os eventos (mouse, teclado, botão, etc).
         for event in pygame.event.get():
             # Verifica se foi fechado.
@@ -25,9 +30,5 @@ def win_screen(window):
             if event.type == pygame.KEYUP:
                 if event.key == pygame.K_SPACE:
                     return INIT
-
-        # A cada loop, redesenha o fundo 
-        window.blit(background, background_rect)
-
-        # Depois de desenhar tudo, inverte o display.
-        pygame.display.flip()
+        
+        return WIN

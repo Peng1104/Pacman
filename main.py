@@ -5,7 +5,7 @@ from os import path
 from screens.game import game_screen
 from screens.init import init_screen
 from screens.final import FinalScreen
-from screens.win import win_screen
+from screens.win import WinScreen
 
 from settings import *
 
@@ -56,6 +56,6 @@ while state != QUIT:
             state = screen.getNextState()
 
     elif state == WIN:
-        state = win_screen(window)
+        state = WinScreen(window)
 
 pygame.quit()
