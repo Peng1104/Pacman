@@ -41,7 +41,7 @@ class GameScreen(BaseScreen):
                 elif tile == '@':
                     self.player = Pacman(y, x, playerImg, self)
                 elif tile =='$':
-                    Ghost(y, x, ghostImg, self.ghosts, self)
+                    Ghost(y, x, ghostImg, self, 300, self.ghosts)
                     Coin(y, x, coinImg, self.coins)
                 elif tile == '.':
                     Coin(y, x, coinImg, self.coins)
@@ -94,83 +94,78 @@ class GameScreen(BaseScreen):
         self.window.blit(text_surface, text_rect)
 
     def getNextState(self) -> int:
-        self.assets[MUSIC_SND].play()
+        state = WAITING
 
-        for event in pygame.event.get():
+        while True:
+            self.draw()
 
-            state = WAITING
-            if event.type == pygame.QUIT:
-                __endGame()
-                return QUIT
+            self.assets[MUSIC_SND].play()
+
+            for event in pygame.event.get():
+                
+                if event.type == pygame.QUIT:
+                    return QUIT
+                
+                if state is not COLLIDING and event.type == pygame.KEYDOWN:
+                    
+                    if event.key == pygame.K_LEFT:
+                        self.player.updateSpeed(dx=-1)
+                        state = PLAYING
+                    
+                    elif event.key == pygame.K_RIGHT:
+                        self.player.updateSpeed(dx=1)
+                        state = PLAYING
+                    
+                    elif event.key == pygame.K_UP:
+                        self.player.updateSpeed(dy=-1)
+                        self.state = PLAYING
+                    
+                    elif event.key == pygame.K_DOWN:
+                        self.player.updateSpeed(dy=1)
+                        state = PLAYING
+                
+            if state is not WAITING:
+                self.ghosts.update()
+                self.player.update()
+
+            if state == PLAYING:
+                ghost_hits = pygame.sprite.spritecollide(self.player, self.ghosts, False)
+
+                if len(ghost_hits) > 0:
+                    state = COLLIDING
+                    colliding_tick = pygame.time.get_ticks()
+                    colliding_duration = 300
+
+                coin_hits = pygame.sprite.spritecollide(self.player, self.coins, True)
+
+                self.score += len(coin_hits) * 100
+
+                if len(self.coins) == 0:
+                    return WIN
             
-            if state is not COLLIDING and event.type == pygame.KEYDOWN:
+            if state == COLLIDING:
+                now = pygame.time.get_ticks()
                 
-                if event.key == pygame.K_LEFT:
-                    self.player.updateSpeed(dx=-1)
-                    state = PLAYING
-                
-                elif event.key == pygame.K_RIGHT:
-                    self.player.updateSpeed(dx=1)
-                    state = PLAYING
-                
-                elif event.key == pygame.K_UP:
-                    self.player.updateSpeed(dy=-1)
-                    self.state = PLAYING
-                
-                elif event.key == pygame.K_DOWN:
-                    self.player.updateSpeed(dy=1)
-                    state = PLAYING
-        
-        if state is not WAITING:
-            self.ghosts.update()
-            self.player.update()
+                if now - colliding_tick > colliding_duration:
+                    self.assets[DEATH_SND].play()
+                    self.lives -= 1
 
-        if state == PLAYING:
-            ghost_hits = pygame.sprite.spritecollide(self.player, self.ghosts, False)
+                    if self.lives == 0:
+                        self.clock.tick(30)
+                        angle = 0
+                        
+                        for i in range(0, 72):
+                            angle += 10
+                            pacman_rotated, pacman_rotated_rect = self.player.rotate(angle)
+                            self.window.blit(pacman_rotated, pacman_rotated_rect)
+                            pygame.display.flip()
+                        
+                        return GAMEOVER
+                    else:
+                        self.score -= 1000
+                        state = WAITING
+                        
+                        self.player.reset()
 
-            if len(ghost_hits) > 0:
-                state = COLLIDING
-                colliding_tick = pygame.time.get_ticks()
-                colliding_duration = 300
-
-            coin_hits = pygame.sprite.spritecollide(self.player, self.coins, True)
-
-            self.score += len(coin_hits) * 100
-
-            if len(self.coins) == 0:
-                __endGame()
-                return WIN
-        
-        if state == COLLIDING:
-            now = pygame.time.get_ticks()
-            
-            if now - colliding_tick > colliding_duration:
-                self.assets[DEATH_SND].play()
-                self.lives -= 1
-
-                if self.lives == 0:
-                    angle = 0
-                    
-                    for i in range(0, 72):
-                        angle += 10
-                        pacman_rotated, pacman_rotated_rect = self.player.rotate(angle)
-                        self.window.blit(pacman_rotated, pacman_rotated_rect)
-                        pygame.display.flip()
-                    
-                    __endGame()
-                    return GAMEOVER
-                else:
-                    self.score -= 1000
-                    state = WAITING
-                    
-                    self.player.reset()
-
-                    for ghost in self.ghosts:
-                        ghost.reset()
-        
-        def __endGame(self) -> None:
-
-            self.walls.empty()
-            self.coins.empty()
-            self.ghosts.empty()
-            self.player = None
+                        for ghost in self.ghosts:
+                            ghost.reset()

@@ -3,7 +3,7 @@ import pygame
 
 from os import path
 from screens.game import GameScreen
-from screens.init import init_screen
+from screens.start import init_screen
 from screens.final import FinalScreen
 from screens.win import WinScreen
 
@@ -43,25 +43,24 @@ selected_level = None
 while state != QUIT:
     
     if state == INIT:
+        screen = None
         selected_level = init_screen(window)
         state = PLAYING
     
     elif state == PLAYING:
-        map_path = get_level_path(selected_level)
-        map_data = load_map(map_path)
-        screen = GameScreen(window, map_data)
-        print(screen)
+        screen = GameScreen(window, load_map(get_level_path(selected_level)))
     
     elif state == GAMEOVER:
         screen = FinalScreen(window)
 
     elif state == WIN:
         screen = WinScreen(window)
-  
-    actualState = state
 
-    while actualState == state:
-        screen.draw()
-        state = screen.getNextState()
+    if screen is not None:
+        actualState = state
 
+        while actualState == state:
+            screen.draw()
+            state = screen.getNextState()
+        
 pygame.quit()
