@@ -4,7 +4,7 @@ import pygame
 
 # from assets import MOVE_SND, load_assets
 from assets import *
-from settings import FPS, GAMEOVER, GREY, HEIGHT, QUIT, TILESIZE, WIDTH, WIN, PLAYING, WAITING, COLLIDING
+from settings import GAMEOVER, GREY, HEIGHT, QUIT, TILESIZE, WIDTH, WIN, PLAYING, WAITING, COLLIDING
 from sprites.coin import Coin
 from sprites.ghost import Ghost
 from sprites.pacman import Pacman
@@ -99,36 +99,17 @@ class GameScreen(BaseScreen):
         while True:
             self.draw()
 
-            self.assets[MUSIC_SND].play()
+            state = self.__processEvents(state)
 
-            for event in pygame.event.get():
-                
-                if event.type == pygame.QUIT:
-                    return QUIT
-                
-                if state is not COLLIDING and event.type == pygame.KEYDOWN:
-                    
-                    if event.key == pygame.K_LEFT:
-                        self.player.updateSpeed(dx=-1)
-                        state = PLAYING
-                    
-                    elif event.key == pygame.K_RIGHT:
-                        self.player.updateSpeed(dx=1)
-                        state = PLAYING
-                    
-                    elif event.key == pygame.K_UP:
-                        self.player.updateSpeed(dy=-1)
-                        self.state = PLAYING
-                    
-                    elif event.key == pygame.K_DOWN:
-                        self.player.updateSpeed(dy=1)
-                        state = PLAYING
+            if state is QUIT:
+                return QUIT
                 
             if state is not WAITING:
                 self.ghosts.update()
                 self.player.update()
 
             if state == PLAYING:
+
                 ghost_hits = pygame.sprite.spritecollide(self.player, self.ghosts, False)
 
                 if len(ghost_hits) > 0:
@@ -147,11 +128,11 @@ class GameScreen(BaseScreen):
                 now = pygame.time.get_ticks()
                 
                 if now - colliding_tick > colliding_duration:
-                    self.assets[DEATH_SND].play()
+                    self.__stopSong(MUSIC_SND)
+                    self.__playSong(DEATH_SND)
                     self.lives -= 1
 
                     if self.lives == 0:
-                        self.clock.tick(30)
                         angle = 0
                         
                         for i in range(0, 72):
@@ -169,3 +150,37 @@ class GameScreen(BaseScreen):
 
                         for ghost in self.ghosts:
                             ghost.reset()
+
+    def __processEvents(self,state) -> int:
+        for event in pygame.event.get():    
+            if event.type == pygame.QUIT:
+                return QUIT
+            
+            if state is not COLLIDING and event.type == pygame.KEYDOWN:
+                
+                self.__playSong(MOVE_SND)
+
+                if event.key == pygame.K_LEFT:
+                    self.player.updateSpeed(dx=-1)
+                    return PLAYING
+                
+                elif event.key == pygame.K_RIGHT:
+                    self.player.updateSpeed(dx=1)
+                    return PLAYING
+                
+                elif event.key == pygame.K_UP:
+                    self.player.updateSpeed(dy=-1)
+                    return PLAYING
+                
+                elif event.key == pygame.K_DOWN:
+                    self.player.updateSpeed(dy=1)
+                    return PLAYING
+
+        return state
+    
+    def __playSong(self, song, repeat=0) -> None:
+        self.assets[song].play()
+        self.assets[song].set_volume(0.1)
+    
+    def __stopSong(self,song) -> None:
+        self.assets[song].stop()
