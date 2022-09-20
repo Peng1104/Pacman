@@ -1,9 +1,10 @@
+from types import DynamicClassAttribute
 import pygame
 
 from os import path
 from screens.game import game_screen
 from screens.init import init_screen
-from screens.final import final_screen
+from screens.final import FinalScreen
 from screens.win import win_screen
 
 from settings import *
@@ -36,6 +37,7 @@ window = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption('Pac-man!')
 
 state = INIT
+screen = None
 selected_level = None
 
 while state != QUIT:
@@ -47,7 +49,12 @@ while state != QUIT:
         map_data = load_map(map_path)
         state = game_screen(window, map_data)
     elif state == GAMEOVER:
-        state = final_screen(window)
+        screen = FinalScreen(window)
+
+        while state == GAMEOVER:
+            screen.draw()
+            state = screen.getNextState()
+
     elif state == WIN:
         state = win_screen(window)
 

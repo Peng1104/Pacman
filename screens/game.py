@@ -8,6 +8,7 @@ from sprites.coin import Coin, COINS
 from sprites.ghost import Ghost, GHOSTS
 from sprites.pacman import Pacman
 from sprites.wall import Wall, WALLS
+from screens.baseScreen import BaseScreen
 
 player = None
 
@@ -166,4 +167,8 @@ def endGame() -> None:
     WALLS.empty()
     COINS.empty()
     GHOSTS.empty()
-    player = None
+    player = 
+    
+
+class GameScreen(BaseScreen):
+    __init__
