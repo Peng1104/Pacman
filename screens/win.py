@@ -2,7 +2,7 @@ import pygame
 from os import path
 from screens.baseScreen import BaseScreen
 
-from settings import IMG_DIR, FPS, INIT, QUIT, WIN
+from settings import IMG_DIR, INIT, QUIT, WIN
 
 class WinScreen(BaseScreen):
 

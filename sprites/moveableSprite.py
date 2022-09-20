@@ -1,15 +1,15 @@
 from pygame.time import get_ticks
-from sprites.wall import canMoveTo
 from sprites.baseSprite import BaseSprite
 from settings import TILESIZE
 
 class MoveableSprite(BaseSprite):
 	
-	def __init__(self, x, y, image, moveDelay=60, *groups):
+	def __init__(self, x, y, image, game, moveDelay=60, *groups):
 		super().__init__(x, y, image, groups)
 
 		self.startX = x
 		self.startY = y
+		self.game = game
 		
 		self.moveDelay = moveDelay
 		self.lastMovementTime = get_ticks() - moveDelay
@@ -34,7 +34,7 @@ class MoveableSprite(BaseSprite):
 		self.dy = dy
 
 	def update(self) -> bool:
-		if self._willMoveNow() and canMoveTo(self.x + self.dx, self.y + self.dy):
+		if self._willMoveNow() and self.game.canMoveTo(self.x + self.dx, self.y + self.dy):
 			self.lastMovementTime = get_ticks()
 
 			self.x += self.dx

@@ -1,9 +1,5 @@
 import random
-from pygame.sprite import Group
 from sprites.moveableSprite import MoveableSprite
-from sprites.wall import canMoveTo
-
-GHOSTS = Group() # Grupo contento todos os fantasmas
 
 ALL_MOVEMENT_OPTIONS = [(1, 0), (-1, 0), (0, 1), (0, -1)] # Movimentos possíveis
 
@@ -11,8 +7,8 @@ ALL_MOVEMENT_OPTIONS = [(1, 0), (-1, 0), (0, 1), (0, -1)] # Movimentos possívei
 class Ghost(MoveableSprite):
     
     # Cria um novo fantasma na posição x, y
-    def __init__(self, x, y, img, moveDelay=300):
-        super().__init__(x, y, img, moveDelay, GHOSTS)
+    def __init__(self, x, y, img, game, moveDelay=300, *groups):
+        super().__init__(x, y, img, game, moveDelay, groups)
 
     # Update dos fantasmas
     def update(self) -> bool:
@@ -40,4 +36,4 @@ class Ghost(MoveableSprite):
 
     # Verifica se o fantasma pode se mover para a posição x, y usado em changeDirection
     def __canMoveTo(self, direction) -> bool:
-        return canMoveTo(self.x + direction[0], self.y + direction[1])
+        return self.game.canMoveTo(self.x + direction[0], self.y + direction[1])

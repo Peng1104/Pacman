@@ -6,8 +6,8 @@ from sprites.moveableSprite import MoveableSprite
 # Criando a classe pacman
 class Pacman(MoveableSprite):
 
-    def __init__(self, x, y, img, moveDelay=120):
-        super().__init__(x, y, img, moveDelay)
+    def __init__(self, x, y, img, game, moveDelay=120):
+        super().__init__(x, y, img, game, moveDelay)
         self.originalImage = img
         self.updateImage = False
 
@@ -39,6 +39,9 @@ class Pacman(MoveableSprite):
             
             return True
         return False
+
+    def draw(self, window) -> None:
+        window.blit(self.image, self.rect)
 
     # Rotacionando o pacman
     def rotate(self, angle) -> tuple[Surface, Rect]:
