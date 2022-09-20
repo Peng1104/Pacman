@@ -3,7 +3,7 @@ import pygame
 
 from os import path
 from screens.game import GameScreen
-from screens.start import init_screen
+from screens.start import StartScreen, COLOR_INACTIVE, COLOR_LIST_INACTIVE
 from screens.final import FinalScreen
 from screens.win import WinScreen
 
@@ -43,9 +43,7 @@ selected_level = None
 while state != QUIT:
     
     if state == INIT:
-        screen = None
-        selected_level = init_screen(window)
-        state = PLAYING
+        screen = StartScreen(COLOR_INACTIVE, COLOR_LIST_INACTIVE, WIDTH/3.25, HEIGHT/3, 400, 100, window)
     
     elif state == PLAYING:
         screen = GameScreen(window, load_map(get_level_path(selected_level)))

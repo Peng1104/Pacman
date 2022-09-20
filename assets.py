@@ -8,6 +8,7 @@ from settings import *
 PACMAN_IMG = 'pacman'
 COIN_IMG = 'coin'
 GHOST_IMG = 'ghost'
+PACMAN_LOGO = 'pacmanLogo'
 
 MOVE_SND = 'move'
 DEATH_SND = 'death'
@@ -20,6 +21,7 @@ def load_assets():
     assets = {}
 
     assets[PACMAN_IMG] = scale(load(join(IMG_DIR, 'pacman.png')).convert_alpha(), (PACMAN_WIDTH, PACMAN_HEIGHT)) # 32 x 32 pixels
+    assets[PACMAN_LOGO] = scale(assets[PACMAN_IMG].copy(), (50, 50))
     assets[COIN_IMG] = scale(load(join(IMG_DIR, 'coin.png')).convert_alpha(), (COIN_WIDTH, COIN_HEIGHT)) # 20 x 20 pixels
     assets[GHOST_IMG] = scale(load(join(IMG_DIR, 'ghost.png')).convert_alpha(), (GHOST_WIDTH, GHOST_HEIGHT)) # 32 x 32 pixels
 
