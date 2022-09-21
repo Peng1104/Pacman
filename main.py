@@ -1,4 +1,3 @@
-from types import DynamicClassAttribute
 import pygame
 
 from os import path
@@ -38,7 +37,6 @@ pygame.display.set_caption('Pac-man!')
 
 state = INIT
 screen = None
-selected_level = None
 
 while state != QUIT:
     
@@ -46,7 +44,7 @@ while state != QUIT:
         screen = StartScreen(COLOR_INACTIVE, COLOR_LIST_INACTIVE, WIDTH/3.25, HEIGHT/3, 400, 100, window)
     
     elif state == PLAYING:
-        screen = GameScreen(window, load_map(get_level_path(selected_level)))
+        screen = GameScreen(window, load_map(get_level_path(screen.selectedLevel)))
     
     elif state == GAMEOVER:
         screen = FinalScreen(window)
