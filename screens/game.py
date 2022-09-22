@@ -20,6 +20,9 @@ class GameScreen(BaseScreen):
         self.score = 0
         self.lives = 3
 
+        self.collisionTick = 0
+        self.collisionDuration = 750
+
         self.assets = load_assets()
 
         self.walls = Group()
@@ -109,25 +112,12 @@ class GameScreen(BaseScreen):
                 self.player.update()
 
             if state == PLAYING:
-
-                ghost_hits = pygame.sprite.spritecollide(self.player, self.ghosts, False)
-
-                if len(ghost_hits) > 0:
-                    state = COLLIDING
-                    colliding_tick = pygame.time.get_ticks()
-                    colliding_duration = 300
-
-                coin_hits = pygame.sprite.spritecollide(self.player, self.coins, True)
-
-                self.score += len(coin_hits) * 100
-
-                if len(self.coins) == 0:
-                    return WIN
+                state = self.__nextState()
             
             if state == COLLIDING:
                 now = pygame.time.get_ticks()
                 
-                if now - colliding_tick > colliding_duration:
+                if now - self.collisionTick > self.collisionDuration:
                     self.__stopSong(MUSIC_SND)
                     self.__playSong(DEATH_SND)
                     self.lives -= 1
@@ -151,7 +141,7 @@ class GameScreen(BaseScreen):
                         for ghost in self.ghosts:
                             ghost.reset()
 
-    def __processEvents(self,state) -> int:
+    def __processEvents(self, state) -> int:
         for event in pygame.event.get():    
             if event.type == pygame.QUIT:
                 return QUIT
@@ -184,3 +174,25 @@ class GameScreen(BaseScreen):
     
     def __stopSong(self,song) -> None:
         self.assets[song].stop()
+    
+    def __nextState(self) -> int:
+        ghost_hits = pygame.sprite.spritecollide(self.player, self.ghosts, False)
+
+        if len(ghost_hits) > 0:
+            self.collisionTick = pygame.time.get_ticks()
+
+            self.player.updateSpeed(dx=0, dy=0)
+
+            for ghost in self.ghosts:
+                ghost.updateSpeed(dx=0, dy=0)
+
+            return COLLIDING
+
+        coin_hits = pygame.sprite.spritecollide(self.player, self.coins, True)
+
+        self.score += len(coin_hits) * 100
+
+        if len(self.coins) == 0:
+            return WIN
+        
+        return PLAYING
