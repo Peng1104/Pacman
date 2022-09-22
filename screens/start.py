@@ -18,7 +18,7 @@ OPTIONS = ["Level 1", "Level 2", "Level 3"]
 class StartScreen(BaseScreen):
     
     def __init__(self, color_menu, color_option, x, y, w, h, window):
-        super().__init__(window)
+        super().__init__(window, None)
         self.color_menu = color_menu
         self.color_option = color_option
         self.x = x
@@ -27,7 +27,6 @@ class StartScreen(BaseScreen):
         self.h = h
         self.showOptions = False
         self.assets = load_assets()
-        self.selectedLevel = None
         self.boxes = []
 
 
@@ -95,7 +94,7 @@ class StartScreen(BaseScreen):
             box, text = option
             
             if box.left < pos[0] < box.right and box.top < pos[1] < box.bottom:
-                self.selectedLevel = text
+                self.level = text
                 return True
         
         return False

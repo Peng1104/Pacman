@@ -6,8 +6,8 @@ from settings import IMG_DIR, INIT, QUIT, WIN
 
 class WinScreen(BaseScreen):
 
-    def __init__(self, window):
-       super().__init__(window)
+    def __init__(self, window, level):
+       super().__init__(window, level)
 
     def draw(self) -> None:
         # Carrega o fundo da tela inicial

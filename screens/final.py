@@ -7,8 +7,8 @@ from settings import IMG_DIR, GAMEOVER, PLAYING, QUIT
 # Criando a função que inicia a tela de Game Over
 class FinalScreen(BaseScreen):
 
-    def __init__(self, window):
-       super().__init__(window)
+    def __init__(self, window, level):
+       super().__init__(window, level)
     
     def draw(self) -> None:
         # Carrega o fundo da tela inicial

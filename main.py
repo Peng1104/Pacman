@@ -44,13 +44,13 @@ while state != QUIT:
         screen = StartScreen(COLOR_INACTIVE, COLOR_LIST_INACTIVE, WIDTH/3.25, HEIGHT/3, 400, 100, window)
     
     elif state == PLAYING:
-        screen = GameScreen(window, load_map(get_level_path(screen.selectedLevel)))
+        screen = GameScreen(window, load_map(get_level_path(screen.level)), screen.level)
     
     elif state == GAMEOVER:
-        screen = FinalScreen(window)
+        screen = FinalScreen(window, screen.level)
 
     elif state == WIN:
-        screen = WinScreen(window)
+        screen = WinScreen(window, screen.level)
 
     if screen is not None:
         actualState = state

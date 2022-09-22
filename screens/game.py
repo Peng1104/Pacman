@@ -14,8 +14,8 @@ from pygame.sprite import Group
 
 class GameScreen(BaseScreen):
     
-    def __init__(self, window, mapData) -> None:
-        super().__init__(window)
+    def __init__(self, window, mapData, level) -> None:
+        super().__init__(window, level)
 
         self.score = 0
         self.lives = 3
