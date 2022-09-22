@@ -52,10 +52,9 @@ while state != QUIT:
     elif state == WIN:
         screen = WinScreen(window, screen.level)
 
-    if screen is not None:
-        actualState = state
+    actualState = state
 
-        while actualState == state:
-            state = screen.getNextState()
+    while actualState == state:
+        state = screen.getNextState()
         
 pygame.quit()
