@@ -75,13 +75,13 @@ class StartScreen(BaseScreen):
 
             # Para o menu
             if event.type == pygame.MOUSEMOTION:
-                if self.x < pos[0] < self.x + self.w and self.y < pos[1] < self.y + self.h:
+                if self.__hasClickedMainMenu(pos):
                     self.color_menu = COLOR_ACTIVE
                 else:
                     self.color_menu = COLOR_INACTIVE
 
             if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:                    
-                if self.x < pos[0] < self.x + self.w and self.y < pos[1] < self.y + self.h:
+                if self.__hasClickedMainMenu(pos):
                     self.showOptions = not self.showOptions
                 
                 if self.__chooseOption(pos):
@@ -98,4 +98,9 @@ class StartScreen(BaseScreen):
                 self.level = text
                 return True
         
+        return False
+    
+    def __hasClickedMainMenu(self, pos):
+        if self.x < pos[0] < self.x + self.w and self.y < pos[1] < self.y + self.h:
+            return True
         return False
