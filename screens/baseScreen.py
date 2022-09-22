@@ -14,4 +14,5 @@ class BaseScreen:
         pass
 
     def getNextState(self) -> int:
+        self.draw()
         pass

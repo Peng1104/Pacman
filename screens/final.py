@@ -21,6 +21,7 @@ class FinalScreen(BaseScreen):
         pygame.display.flip()
             
     def getNextState(self) -> int:
+        super().getNextState()
         
         # Processa os eventos (mouse, teclado, botão, etc).
         for event in pygame.event.get():

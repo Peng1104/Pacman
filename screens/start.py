@@ -66,6 +66,7 @@ class StartScreen(BaseScreen):
                                     self.y + (counter+1)*self.h + (self.h / 2 - msg.get_height() / 2)))
 
     def getNextState(self) -> int:
+        super().getNextState()
         for event in pygame.event.get():
             pos = pygame.mouse.get_pos()
 

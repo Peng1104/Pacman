@@ -56,7 +56,6 @@ while state != QUIT:
         actualState = state
 
         while actualState == state:
-            screen.draw()
             state = screen.getNextState()
         
 pygame.quit()
