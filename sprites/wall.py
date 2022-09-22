@@ -7,3 +7,6 @@ class Wall(BaseSprite):
 		super().__init__(x, y, Surface((TILESIZE, TILESIZE)), group)
 
 		self.image.fill(BLUE)
+	
+	def inside(self, x, y) -> bool:
+		return self.x == x and self.y == y
