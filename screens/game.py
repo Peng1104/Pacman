@@ -10,7 +10,8 @@ from sprites.ghost import Ghost
 from sprites.pacman import Pacman
 from sprites.wall import Wall
 from screens.baseScreen import BaseScreen
-from pygame.sprite import Group 
+from pygame.sprite import Group
+from pygame.time import get_ticks 
 
 class GameScreen(BaseScreen):
     
@@ -99,14 +100,11 @@ class GameScreen(BaseScreen):
     def getNextState(self) -> int:
         state = WAITING
 
-        while True:
+        while state == WAITING or state == COLLIDING or state == PLAYING:
             self.draw()
 
             state = self.__processEvents(state)
 
-            if state is QUIT:
-                return QUIT
-                
             if state is not WAITING:
                 self.ghosts.update()
                 self.player.update()
@@ -115,31 +113,9 @@ class GameScreen(BaseScreen):
                 state = self.__nextState()
             
             if state == COLLIDING:
-                now = pygame.time.get_ticks()
-                
-                if now - self.collisionTick > self.collisionDuration:
-                    self.__stopSong(MUSIC_SND)
-                    self.__playSong(DEATH_SND)
-                    self.lives -= 1
+                state = self.__colliding()
 
-                    if self.lives == 0:
-                        angle = 0
-                        
-                        for i in range(0, 72):
-                            angle += 10
-                            pacman_rotated, pacman_rotated_rect = self.player.rotate(angle)
-                            self.window.blit(pacman_rotated, pacman_rotated_rect)
-                            pygame.display.flip()
-                        
-                        return GAMEOVER
-                    else:
-                        self.score -= 1000
-                        state = WAITING
-                        
-                        self.player.reset()
-
-                        for ghost in self.ghosts:
-                            ghost.reset()
+        return state
 
     def __processEvents(self, state) -> int:
         for event in pygame.event.get():    
@@ -179,7 +155,7 @@ class GameScreen(BaseScreen):
         ghost_hits = pygame.sprite.spritecollide(self.player, self.ghosts, False)
 
         if len(ghost_hits) > 0:
-            self.collisionTick = pygame.time.get_ticks()
+            self.collisionTick = get_ticks()
 
             self.player.updateSpeed(dx=0, dy=0)
 
@@ -196,3 +172,31 @@ class GameScreen(BaseScreen):
             return WIN
         
         return PLAYING
+    
+    def __colliding (self) -> int:
+        if get_ticks() - self.collisionTick > self.collisionDuration:
+            self.__stopSong(MUSIC_SND)
+            self.__playSong(DEATH_SND)
+            self.lives -= 1
+
+            if self.lives == 0:
+                angle = 0
+                
+                for i in range(0, 72):
+                    angle += 10
+                    pacman_rotated, pacman_rotated_rect = self.player.rotate(angle)
+                    self.window.blit(pacman_rotated, pacman_rotated_rect)
+                    pygame.display.flip()
+
+                return GAMEOVER
+
+            else:
+                self.score -= 1000
+                self.player.reset()
+
+                for ghost in self.ghosts:
+                    ghost.reset()
+                
+                return WAITING
+        
+        return COLLIDING
