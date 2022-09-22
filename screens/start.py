@@ -66,7 +66,7 @@ class StartScreen(BaseScreen):
                 self.window.blit(msg, (self.x + (self.w / 2 - msg.get_width() / 2),
                                     self.y + (counter+1)*self.h + (self.h / 2 - msg.get_height() / 2)))
 
-    def getNexState(self) -> int:
+    def getNextState(self) -> int:
         for event in pygame.event.get():
             pos = pygame.mouse.get_pos()
 
